@@ -205,8 +205,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.078467876, y: 0.039165292, z: -0.0030886645, w: -0.9961422}
-  m_LocalPosition: {x: 0.4368447, y: 4.6326523, z: -3.6771982}
+  m_LocalRotation: {x: -0.11432813, y: -0.022949645, z: 0.00263947, w: -0.9931744}
+  m_LocalPosition: {x: -0.04374954, y: 0.7457104, z: -2.5091321}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -391,6 +391,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 590971787}
+  - component: {fileID: 590971788}
   m_Layer: 0
   m_Name: Helix Controller
   m_TagString: Untagged
@@ -414,6 +415,21 @@ Transform:
   - {fileID: 515795224}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &590971788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 590971786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43a8a9b8160a0b74d88154d7bcabc1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 600
+  startpos: {x: 0, y: 0}
+  isSwiping: 0
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
