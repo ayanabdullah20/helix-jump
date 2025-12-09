@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     private bool isGameOver = false;
     private bool isMovingDown = true;
 
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -39,7 +40,6 @@ public class Player : MonoBehaviour
         if(isGameOver) return;
         if(collision.gameObject.CompareTag("Safe"))
         {
-            Debug.Log("Safe Slice Hit");
             isMovingDown = false;
             initialposition = transform.position;
         }
@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
         {
             Debug.Log("Danger Slice Hit Game Over");
             isGameOver = true;
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
         }
 
     }
