@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     public float bounceheight=2f;
     private Rigidbody rb;
     public Vector3 initialposition;
-    private bool isGameOver = false;
+    public bool isGameOver = false;
     private bool isMovingDown = true;
 
 
@@ -47,6 +47,7 @@ public class Player : MonoBehaviour
         {
             Debug.Log("Danger Slice Hit Game Over");
             isGameOver = true;
+            GameManager.instance?.ongameover();
             rb.linearVelocity = Vector3.zero;
         }
 

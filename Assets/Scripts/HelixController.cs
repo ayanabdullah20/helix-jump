@@ -15,15 +15,19 @@ public class HelixController : MonoBehaviour
         //camera related
     private Camera MainCamera;
     private Vector3 cameraTargetpos;
+    private Vector3 cameraStartPos;
     private float cameramovestarttime;
-    public float cameramoveDuration = .5f;
+    public float cameramoveDuration = .08f;
+    private float currentCameraMoveDuration;
     private bool iscameraMoving;
+    public Player player;
 
     void Start()
     {
         ball = GameObject.FindGameObjectWithTag("Player");
         spawninitialstacks();
         MainCamera = Camera.main;
+        currentCameraMoveDuration = cameramoveDuration;
     }
     void spawninitialstacks()
     {
@@ -31,6 +35,14 @@ public class HelixController : MonoBehaviour
         {
             Vector3 spawnPos = new Vector3(0f, -i * gapbetweenstacks, 0f);
             GameObject stack = Instantiate(stackprefab, spawnPos, Quaternion.identity);
+            if (i == 0)
+            {
+                stack.GetComponent<Stack>().generateRandomStack(true);
+            }
+            else
+            {
+                stack.GetComponent<Stack>().generateRandomStack(false);
+            }
             stacklist.Add(stack);
             stack.transform.SetParent(transform);
         }
@@ -38,6 +50,7 @@ public class HelixController : MonoBehaviour
     }
     private void Update()
     {
+        if(player.isGameOver) return;
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
@@ -74,15 +87,18 @@ public class HelixController : MonoBehaviour
         checkstackclear();
         if(iscameraMoving && MainCamera)
         {
-            float t = (Time.time - cameramovestarttime) / cameramoveDuration;
+            float t = (Time.time - cameramovestarttime) / currentCameraMoveDuration;
             if(t < 1f)
             {
-                MainCamera.transform.position = Vector3.Lerp(MainCamera.transform.position, cameraTargetpos, t);
+                t = Mathf.Clamp01(t);
+                float eased = 1f - Mathf.Pow(1f - t, 3f);
+                MainCamera.transform.position = Vector3.Lerp(cameraStartPos, cameraTargetpos, eased);
             }
             else
             {
                 MainCamera.transform.position = cameraTargetpos;
                 iscameraMoving = false;
+                currentCameraMoveDuration = cameramoveDuration;
                 Debug.Log("Camera Move Completed");
             }
         }
@@ -96,6 +112,7 @@ public class HelixController : MonoBehaviour
             if(stacklist[i] && ball.transform.position.y < stacklist[i].transform.position.y)
             {
                 stackcleared(i);
+                GameManager.instance.addscore(10);
                 break;
             }
         }
@@ -113,11 +130,25 @@ public class HelixController : MonoBehaviour
         loweststackY -= gapbetweenstacks;
         Vector3 spawnPos = new Vector3(0f, loweststackY, 0f);
         GameObject newstack = Instantiate(stackprefab, spawnPos, Quaternion.identity,transform);
+        newstack.GetComponent<Stack>().generateRandomStack(false);
         stacklist.Add(newstack);
         Debug.Log("New Stack Spawned at pos y : " + loweststackY);
         if (MainCamera)
         {
-            cameraTargetpos = new Vector3(MainCamera.transform.position.x, MainCamera.transform.position.y - gapbetweenstacks, MainCamera.transform.position.z);
+            // If camera already had a pending target, accumulate downwards to avoid drift
+            if (iscameraMoving)
+            {
+                cameraTargetpos += Vector3.down * gapbetweenstacks;
+                currentCameraMoveDuration = Mathf.Max(0.03f, cameramoveDuration * 0.35f);
+            }
+            else
+            {
+                cameraStartPos = MainCamera.transform.position;
+                cameraTargetpos = cameraStartPos + Vector3.down * gapbetweenstacks;
+                currentCameraMoveDuration = cameramoveDuration;
+            }
+            // Always restart interpolation from current camera position
+            cameraStartPos = MainCamera.transform.position;
             cameramovestarttime = Time.time;
             iscameraMoving = true;
         }
